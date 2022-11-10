@@ -573,6 +573,20 @@ macro_rules! make_timer {
                 self.regs.cnt.write(|w| unsafe { w.bits(0) });
             }
 
+            /// UIF Flag in SR register is set when CNT reg is overflow / underflow
+            ///
+            pub fn get_uif(&self ) -> bool {
+                self.regs.sr.read().uif().bit_is_set()
+            }
+
+            pub fn clear_uif(&mut self) {
+                unsafe {
+                    self.regs
+                        .sr
+                        .write(|w| w.bits(0xffff_ffff).uif().clear_bit());
+                }
+            }
+
             /// Re-initialize the counter and generates an update of the registers. Note that the prescaler
             /// counter is cleared too (anyway the prescaler ratio is not affected). The counter is cleared.
             /// When changing timer frequency (or period) via PSC, you may need to run this. Alternatively, change
