@@ -838,7 +838,14 @@ macro_rules! make_timer {
         // #[cfg_attr(docsrs, doc(cfg(feature = "embedded-hal")))]
         impl DelayMs<u32> for Timer<pac::$TIMX> {
             fn delay_ms(&mut self, ms: u32) {
-                self.delay_us(ms as u32 * 1_000);
+                //self.delay_us(ms as u32 * 1_000);
+                let ms_to_s = ms as f32 / 1_000.;
+                 self.set_freq(1. / (ms_to_s)).ok();
+                self.reset_count();
+                self.enable();
+                while self.get_uif() == false {}
+                self.clear_uif();
+                self.disable();
             }
         }
 
@@ -846,7 +853,14 @@ macro_rules! make_timer {
         // #[cfg_attr(docsrs, doc(cfg(feature = "embedded-hal")))]
         impl DelayMs<u16> for Timer<pac::$TIMX> {
             fn delay_ms(&mut self, ms: u16) {
-                self.delay_us(ms as u32 * 1_000);
+                //self.delay_us(ms as u32 * 1_000);
+                let ms_to_s = ms as f32 / 1_000.;
+                 self.set_freq(1. / (ms_to_s)).ok();
+                self.reset_count();
+                self.enable();
+                while self.get_uif() == false {}
+                self.clear_uif();
+                self.disable();
             }
         }
 
@@ -854,7 +868,14 @@ macro_rules! make_timer {
         // #[cfg_attr(docsrs, doc(cfg(feature = "embedded-hal")))]
         impl DelayMs<u8> for Timer<pac::$TIMX> {
             fn delay_ms(&mut self, ms: u8) {
-                self.delay_us(ms as u32 * 1_000);
+                //self.delay_us(ms as u32 * 1_000);
+                let ms_to_s = ms as f32 / 1_000.;
+                 self.set_freq(1. / (ms_to_s)).ok();
+                self.reset_count();
+                self.enable();
+               while self.get_uif() == false {}
+                self.clear_uif();
+                self.disable();
             }
         }
 
@@ -862,10 +883,12 @@ macro_rules! make_timer {
         // #[cfg_attr(docsrs, doc(cfg(feature = "embedded-hal")))]
         impl DelayUs<u32> for Timer<pac::$TIMX> {
             fn delay_us(&mut self, us: u32) {
-                self.set_freq(1. / (us as f32 * 1_000.)).ok();
+                let us_to_s = us as f32 / 1_000_000.;
+                self.set_freq(1. / (us_to_s)).ok();
                 self.reset_count();
                 self.enable();
-                while self.read_count() != 0 {}
+                while self.get_uif() == false {}
+                self.clear_uif();
                 self.disable();
             }
         }
