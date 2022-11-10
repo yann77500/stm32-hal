@@ -1652,10 +1652,26 @@ fn calc_freq_vals(freq: f32, clock_speed: u32) -> Result<(u16, u16), ValueError>
     // Different combinations will result in different amounts of rounding error.
 
     let max_val = 65_535.;
-    let rhs = clock_speed as f32 / freq;
+    let f32clk_speed = clock_speed as f32;
+    let rhs = f32clk_speed / freq;
 
-    let psc = (rhs - 1.) / (1 << 16) as f32;
-    let arr = rhs / (psc + 1.) - 1.;
+
+    let mut psc = (rhs - 1.) / (1 << 16) as f32;
+
+    if ((psc*10.0) % 10.0) as u8>= 5 {
+        psc += 1.0;
+    }
+
+    //let period = 1./freq as f32;
+    //let clk_period = (1./clock_speed as f32)*psc;
+
+    let arr  = f32clk_speed/(freq*psc);
+
+/*
+    let arr = (rhs - 1.) / (1 << 16) as f32;
+    let  psc= rhs / (arr + 1.) - 1.;
+*/
+    //hprintln!("clk_speed={} freq={} pcs={} arr={}",clock_speed,freq,psc,arr);
 
     if arr > max_val || psc > max_val {
         return Err(ValueError {});
