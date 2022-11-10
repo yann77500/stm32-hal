@@ -1651,8 +1651,7 @@ fn calc_freq_vals(freq: f32, clock_speed: u32) -> Result<(u16, u16), ValueError>
     // Different combinations will result in different amounts of rounding error.
 
     let max_val = 65_535.;
-    let f32clk_speed = clock_speed as f32;
-    let rhs = f32clk_speed / freq;
+    let rhs = clock_speed as f32 / freq;
 
     let psc = (rhs - 1.) / (1 << 16) as f32;
     let arr = rhs / (psc + 1.) - 1.;
