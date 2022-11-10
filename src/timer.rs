@@ -508,7 +508,7 @@ macro_rules! make_timer {
 
             /// Enable the timer.
             pub fn enable(&mut self) {
-                self.regs.cr1.write(|w| w.cen().set_bit());
+                self.regs.cr1.modify(|_,w| w.cen().set_bit());
             }
 
             /// Disable the timer.
